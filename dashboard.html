@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Eletti - Teramo 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        :root { --azione: #8A2BE2; --territorio: #00BFFF; --comuni: #CD5C5C; --dangelo: #e0e0e0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; color: #2c3e50; padding: 20px 20px 0 20px; margin: 0; display: flex; flex-direction: column; min-height: 100vh;}
+        
+        .main-container { flex: 1; max-width: 1400px; margin: auto; width: 100%;}
+        
+        h1 { text-align: center; font-size: 34px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;}
+        h3.subtitle { text-align: center; color: #7f8c8d; font-size: 16px; margin-top: 0; margin-bottom: 25px; font-weight: normal; }
+        h2 { font-size: 20px; border-bottom: 3px solid #ecf0f1; padding-bottom: 10px; margin-bottom: 20px; color: #34495e;}
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px; }
+        @media (max-width: 1000px) { .grid-2 { grid-template-columns: 1fr; } }
+        
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 16px; }
+        th, td { border-bottom: 1px solid #eee; padding: 14px 10px; text-align: center; }
+        th { background-color: #f8f9fa; color: #7f8c8d; font-size: 14px; font-weight: 700; text-transform: uppercase;}
+        
+        .refresh-btn { display: block; margin: 0 auto 30px auto; padding: 15px 30px; background: #2ecc71; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(46,204,113,0.3);}
+        .refresh-btn:hover { transform: translateY(-2px); }
+        
+        .badge { padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 14px; color: white; display: inline-block; }
+        .color-azione { background-color: var(--azione); }
+        .color-territorio { background-color: var(--territorio); color: #000; }
+        .color-comuni { background-color: var(--comuni); }
+        .color-dangelo { background-color: white; color: #333; border: 1px solid #ccc; }
+        
+        .chart-container { position: relative; height: 420px; width: 100%; }
+        .doughnut-container { position: relative; height: 280px; width: 100%; display: flex; justify-content: center; margin-bottom: 15px;}
+        
+        .seggi-dettaglio { display: flex; flex-direction: column; gap: 10px; font-size: 15px; margin-top: 10px;}
+        .seggio-box { display: flex; align-items: stretch; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: #fafafa;}
+        .seggio-box .color-strip { width: 15px; flex-shrink: 0; }
+        .seggio-box .content { padding: 12px; flex-grow: 1; text-align: left;}
+        .seggio-box h4 { margin: 0 0 5px 0; font-size: 16px; }
+        .seggio-box ul { margin: 0; padding-left: 20px; font-size: 14px; list-style-type: square; color: #333;}
+        .seggio-box ul li { margin-bottom: 3px; font-weight: bold;}
+
+        /* Stile professionale crediti */
+        .footer-credits { margin-top: 40px; padding: 20px 0; font-size: 14px; color: #7f8c8d; border-top: 1px solid #ddd; text-align: center; width: 100%; background-color: #f0f2f5;}
+        .footer-credits a { color: #3498db; text-decoration: none; font-weight: bold; }
+        .footer-credits a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <h1>Risultati Ufficiali Teramo 2026</h1>
+    <h3 class="subtitle">Elezioni del Consiglio Provinciale della Provincia di Teramo - 8 Marzo 2026</h3>
+    
+    <button class="refresh-btn" onclick="caricaDati()">🔄 AGGIORNA DATI ORA</button>
+
+    <div class="grid-2">
+        <div class="card">
+            <h2>Voti di Lista (Ponderati) e Seggi</h2>
+            <table id="tabella-liste">
+                <thead><tr><th>Lista</th><th>Ponderati</th><th>%</th><th>Seggi</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>Composizione del Consiglio Eletto (10 Seggi)</h2>
+            <div class="doughnut-container"><canvas id="graficoSeggi"></canvas></div>
+            <div id="dettaglio-seggi" class="seggi-dettaglio"></div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 25px;">
+        <h2>I 10 Consiglieri Eletti (Classifica Ponderata Finale)</h2>
+        <table id="tabella-eletti">
+            <thead>
+                <tr>
+                    <th>Pos.</th>
+                    <th style="text-align: left;">Nominativo Eletto</th>
+                    <th>Lista di Appartenenza</th>
+                    <th>Voti Ponderati</th>
+                    <th>Incidenza su Lista</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <h2>Distribuzione Voti Puri (Schede Scrutinate per Eletto)</h2>
+            <div class="chart-container"><canvas id="graficoVotiPuri"></canvas></div>
+        </div>
+        
+        <div class="card">
+            <h2>Peso dei Singoli Eletti sui Voti di Lista</h2>
+            <div class="chart-container"><canvas id="graficoPesoListe"></canvas></div>
+        </div>
+    </div>
+</div>
+
+<div class="footer-credits">
+    System Architecture & Data Visualization by <a href="https://github.com/mauz79" target="_blank">mauz79</a> &copy; 2026 | Elezioni Provinciali Teramo
+</div>
+
+<script>
+    Chart.register(ChartDataLabels);
+    
+    const GOOGLE_API_URL = 'https://script.google.com/macros/s/AKfycbymTpPhhv_wQESb_whdvk4qTs5VLOF2jBc5ROEAXLb1quAR1LIKjHC_It_KFzveHzw/exec';
+    const PESI = { "Fascia A (Azzurra)": 48, "Fascia B (Arancione)": 120, "Fascia C (Grigia)": 204, "Fascia D (Rossa)": 257, "Fascia E (Verde)": 604 };
+    const CLASSI_COLORE = { "Azione con Calenda": "color-azione", "La Forza del Territorio": "color-territorio", "La Casa dei Comuni": "color-comuni", "Con D'Angelo Presidente": "color-dangelo" };
+    const HEX_COLORI = { "Azione con Calenda": "#8A2BE2", "La Forza del Territorio": "#00BFFF", "La Casa dei Comuni": "#CD5C5C", "Con D'Angelo Presidente": "#e0e0e0" };
+
+    let chartPuri = null; let chartSeggi = null; let chartPeso = null;
+
+    const pulisciNome = (n) => n.replace(/^\d+\s*-\s*/, '');
+
+    function caricaDati() { 
+        document.querySelector('.refresh-btn').innerText = "⏳ Caricamento...";
+        fetch(GOOGLE_API_URL).then(r => r.json()).then(data => {
+            elaboraDati(data);
+            document.querySelector('.refresh-btn').innerText = "🔄 AGGIORNA DATI ORA";
+        }).catch(e => {
+            alert("Errore di rete. Riprova.");
+            document.querySelector('.refresh-btn').innerText = "🔄 AGGIORNA DATI ORA";
+        });
+    }
+
+    function elaboraDati(righe) {
+        let votiListe = { "Azione con Calenda": 0, "La Forza del Territorio": 0, "La Casa dei Comuni": 0, "Con D'Angelo Presidente": 0 };
+        let totValido = 0; let candidati = {};
+
+        righe.forEach(r => {
+            let f = r[1], l = r[2], c = r[3], p = PESI[f] || 0;
+            if (votiListe[l] !== undefined) {
+                votiListe[l] += p; totValido += p;
+                if (c && c !== "NESSUNA PREFERENZA") {
+                    let nomeP = pulisciNome(c); 
+                    if (!candidati[nomeP]) candidati[nomeP] = { lista: l, pond: 0, grezzi: {"Fascia A (Azzurra)":0, "Fascia B (Arancione)":0, "Fascia C (Grigia)":0, "Fascia D (Rossa)":0, "Fascia E (Verde)":0} };
+                    candidati[nomeP].pond += p; candidati[nomeP].grezzi[f]++;
+                }
+            }
+        });
+
+        let seggi = { "Azione con Calenda": 0, "La Forza del Territorio": 0, "La Casa dei Comuni": 0, "Con D'Angelo Presidente": 0 };
+        let quozienti = [];
+        for (let l in votiListe) { for (let i = 1; i <= 10; i++) quozienti.push({ l: l, q: votiListe[l] / i }); }
+        quozienti.sort((a, b) => b.q - a.q);
+        for (let i = 0; i < 10; i++) if(quozienti[i]) seggi[quozienti[i].l]++;
+
+        let eletti = [];
+        for (let l in seggi) {
+            let candList = Object.keys(candidati).filter(n => candidati[n].lista === l).sort((a, b) => candidati[b].pond - candidati[a].pond);
+            for (let i = 0; i < seggi[l]; i++) if (candList[i]) eletti.push(candList[i]);
+        }
+        eletti.sort((a, b) => candidati[b].pond - candidati[a].pond);
+
+        renderUI(votiListe, totValido, seggi, candidati, eletti);
+    }
+
+    function renderUI(votiListe, totValido, seggi, candidati, eletti) {
+        let tbL = document.querySelector('#tabella-liste tbody'); tbL.innerHTML = '';
+        let etichetteSeggi = []; let datiSeggi = []; let coloriSeggi = []; let htmlDettaglioSeggi = '';
+        let listeOrdinate = Object.keys(votiListe).sort((a,b) => votiListe[b] - votiListe[a]);
+        
+        listeOrdinate.forEach(l => {
+            let perc = totValido > 0 ? ((votiListe[l] / totValido) * 100).toFixed(2) : 0;
+            tbL.innerHTML += `<tr><td><span class="badge ${CLASSI_COLORE[l]}">${l}</span></td><td><strong>${votiListe[l]}</strong></td><td>${perc}%</td><td style="font-size:20px; font-weight:bold;">${seggi[l]}</td></tr>`;
+            
+            if(seggi[l] > 0) { 
+                etichetteSeggi.push(l); datiSeggi.push(seggi[l]); coloriSeggi.push(HEX_COLORI[l]); 
+                let nomiLista = eletti.filter(n => candidati[n].lista === l);
+                let listaHtml = nomiLista.map(n => `<li>${n}</li>`).join('');
+                let textColor = HEX_COLORI[l] === '#e0e0e0' ? '#333' : HEX_COLORI[l];
+                htmlDettaglioSeggi += `
+                <div class="seggio-box">
+                    <div class="color-strip" style="background-color: ${HEX_COLORI[l]}"></div>
+                    <div class="content">
+                        <h4 style="color:${textColor}">${l} (${seggi[l]} Seggi)</h4>
+                        <ul>${listaHtml}</ul>
+                    </div>
+                </div>`;
+            }
+        });
+        document.getElementById('dettaglio-seggi').innerHTML = htmlDettaglioSeggi;
+
+        let tbE = document.querySelector('#tabella-eletti tbody'); tbE.innerHTML = '';
+        eletti.forEach((n, i) => {
+            let c = candidati[n], p = votiListe[c.lista] > 0 ? ((c.pond / votiListe[c.lista]) * 100).toFixed(1) : 0;
+            tbE.innerHTML += `<tr><td><strong>#${i+1}</strong></td><td style="text-align:left; font-size:17px;"><strong>${n}</strong></td><td><span class="badge ${CLASSI_COLORE[c.lista]}">${c.lista}</span></td><td style="font-weight:bold; font-size:17px;">${c.pond}</td><td>${p}%</td></tr>`;
+        });
+
+        disegnaGrafici(eletti, candidati, etichetteSeggi, datiSeggi, coloriSeggi, listeOrdinate, votiListe);
+    }
+
+    function disegnaGrafici(eletti, candidati, labelsSeggi, dataSeggi, colorsSeggi, listeOrdinate, votiListe) {
+        
+        if (chartSeggi) chartSeggi.destroy();
+        chartSeggi = new Chart(document.getElementById('graficoSeggi').getContext('2d'), {
+            type: 'doughnut',
+            data: { labels: labelsSeggi, datasets: [{ data: dataSeggi, backgroundColor: colorsSeggi, borderColor: '#fff', borderWidth: 2 }] },
+            options: { 
+                rotation: -90, circumference: 180, responsive: true, maintainAspectRatio: false, 
+                plugins: { 
+                    datalabels: { color: '#fff', font: {size: 24, weight: 'bold'}, formatter: (val) => val }, 
+                    legend: { display: false },
+                    tooltip: { titleFont: {size: 16}, bodyFont: {size: 16} }
+                } 
+            }
+        });
+
+        if (chartPuri) chartPuri.destroy();
+        const estrai = (fascia) => eletti.map(n => candidati[n].grezzi[fascia]);
+        const etichetteNomiBrevi = eletti.map(e => e.split(' ')[0]);
+
+        chartPuri = new Chart(document.getElementById('graficoVotiPuri').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: etichetteNomiBrevi, 
+                datasets: [
+                    { label: 'Azzurra', data: estrai("Fascia A (Azzurra)"), backgroundColor: '#4da6ff' },
+                    { label: 'Arancione', data: estrai("Fascia B (Arancione)"), backgroundColor: '#ff9933' },
+                    { label: 'Grigia', data: estrai("Fascia C (Grigia)"), backgroundColor: '#999999' },
+                    { label: 'Rossa', data: estrai("Fascia D (Rossa)"), backgroundColor: '#cc0000' },
+                    { label: 'Verde', data: estrai("Fascia E (Verde)"), backgroundColor: '#33cc33' }
+                ]
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false, 
+                scales: { x: { stacked: true, grid: {display:false} }, y: { stacked: true } }, 
+                plugins: { 
+                    datalabels: { 
+                        color: 'white', font: {weight: 'bold', size: 14}, 
+                        formatter: (v) => v > 0 ? v : '' 
+                    },
+                    legend: { position: 'top' }
+                } 
+            }
+        });
+
+        if (chartPeso) chartPeso.destroy();
+        let datasetsPeso = [];
+        
+        let dataResto = listeOrdinate.map(l => {
+            let votiEletti = eletti.filter(n => candidati[n].lista === l).reduce((sum, n) => sum + candidati[n].pond, 0);
+            return votiListe[l] - votiEletti;
+        });
+        datasetsPeso.push({ label: 'Voti Restanti / Non Eletti', data: dataResto, backgroundColor: '#bdc3c7' });
+
+        let maxEletti = Math.max(...listeOrdinate.map(l => eletti.filter(n => candidati[n].lista === l).length), 0);
+        
+        for(let i = 0; i < maxEletti; i++) {
+            let dataElettoN = listeOrdinate.map(l => {
+                let eL = eletti.filter(n => candidati[n].lista === l);
+                return eL[i] ? candidati[eL[i]].pond : 0;
+            });
+            let bgColors = listeOrdinate.map(l => HEX_COLORI[l]);
+            datasetsPeso.push({ label: `Seggio ${i+1}`, data: dataElettoN, backgroundColor: bgColors, borderColor: '#fff', borderWidth: 2 });
+        }
+
+        chartPeso = new Chart(document.getElementById('graficoPesoListe').getContext('2d'), {
+            type: 'bar',
+            data: { labels: listeOrdinate, datasets: datasetsPeso },
+            options: { 
+                responsive: true, maintainAspectRatio: false, 
+                scales: { x: { stacked: true, grid: {display:false} }, y: { stacked: true } },
+                plugins: { 
+                    datalabels: { 
+                        color: (context) => context.datasetIndex === 0 ? '#333' : '#fff', 
+                        font: {weight: 'bold', size: 13}, 
+                        formatter: (v) => v > 0 ? v : '' 
+                    },
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                if(ctx.datasetIndex > 0) {
+                                    let l = ctx.label;
+                                    let nome = eletti.filter(n => candidati[n].lista === l)[ctx.datasetIndex - 1];
+                                    return nome ? `${nome}: ${ctx.raw} Voti Ponderati` : '';
+                                }
+                                return `Resto (non eletti/solo lista): ${ctx.raw}`;
+                            }
+                        }
+                    }
+                } 
+            }
+        });
+    }
+
+    window.onload = caricaDati; setInterval(caricaDati, 60000); 
+</script>
+
+</body>
+</html>
