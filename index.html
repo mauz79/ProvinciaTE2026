@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terminale Spoglio - Teramo 2026</title>
     <style>
-        :root { --azione: #8A2BE2; --territorio: #00BFFF; --comuni: #CD5C5C; --dangelo: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #eef2f5; text-align: center; margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh;}
+        /* COLORI TENUI E MODERNI */
+        :root { --azione: #a569bd; --territorio: #5dade2; --comuni: #e74c3c; --dangelo: #bdc3c7; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; text-align: center; margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh;}
         
         .main-content { flex: 1; }
-        
         h1 { color: #2c3e50; font-size: 24px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
         h3.subtitle { color: #7f8c8d; font-size: 15px; margin-top: 0; margin-bottom: 30px; font-weight: normal; }
         
@@ -25,57 +25,48 @@
         }
         button:active { transform: scale(0.97); }
         
-        button.fascia-a { background-color: #4da6ff; }
-        button.fascia-b { background-color: #ff9933; }
-        button.fascia-c { background-color: #999999; }
-        button.fascia-d { background-color: #cc0000; }
-        button.fascia-e { background-color: #33cc33; }
+        button.fascia-a { background-color: #5dade2; }
+        button.fascia-b { background-color: #f5b041; }
+        button.fascia-c { background-color: #aeb6bf; }
+        button.fascia-d { background-color: #ec7063; }
+        button.fascia-e { background-color: #58d68d; }
         
         button.lista-azione { background-color: var(--azione); }
-        button.lista-territorio { background-color: var(--territorio); color: #000; }
+        button.lista-territorio { background-color: var(--territorio); }
         button.lista-comuni { background-color: var(--comuni); }
-        button.lista-dangelo { background-color: var(--dangelo); color: #000; border: 2px solid #ccc; }
+        button.lista-dangelo { background-color: var(--dangelo); color: #2c3e50; }
         
         button.cand-btn { background-color: #34495e; }
-        button.yellow { background-color: #ffc107; color: #000; }
+        button.yellow { background-color: #f1c40f; color: #2c3e50; }
         button.red { background-color: #e74c3c; }
-        button.gray { background-color: #7f8c8d; }
-        button.nav-btn { background-color: #bdc3c7; color: #333; margin-top: 15px; border: 2px dashed #95a5a6;}
+        button.gray { background-color: #95a5a6; }
+        button.nav-btn { background-color: #ecf0f1; color: #333; margin-top: 15px; border: 2px dashed #bdc3c7;}
         button.danger { background-color: #c0392b; margin-top: 60px; font-size: 15px;}
+        button.config-btn { background-color: #2980b9; font-size: 15px; margin-top: 20px;}
 
-        .info-box { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 18px; font-weight: bold; border-left: 6px solid #2c3e50; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
-        .info-box span { color: #e74c3c; float: right;}
+        .info-box { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 18px; font-weight: bold; border-left: 6px solid #2c3e50; text-align: left;}
         
         #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: #2c3e50; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; color: white;}
         #login-screen input { padding: 16px; font-size: 20px; border-radius: 8px; border: none; margin-bottom: 20px; text-align: center; width: 80%; max-width: 300px;}
         #login-screen button { width: 80%; max-width: 300px; background: #27ae60; }
 
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: #2ecc71; color: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: slideIn 0.2s, fadeOut 0.3s 2.0s forwards; font-size: 18px;}
+        .toast { background: #2ecc71; color: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; font-size: 18px;}
         .toast.error { background: #e74c3c; } .toast.warning { background: #f39c12; }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
-        /* Stile professionale crediti */
         .footer-credits { margin-top: 40px; padding: 15px 0; font-size: 13px; color: #7f8c8d; border-top: 1px solid #ddd; text-align: center; width: 100%;}
         .footer-credits a { color: #3498db; text-decoration: none; font-weight: bold; }
-        .footer-credits a:hover { text-decoration: underline; }
-        .login-credits { margin-top: 30px; font-size: 12px; color: #95a5a6; }
-        .login-credits a { color: #2ecc71; text-decoration: none; font-weight: bold;}
+        
+        .btn-counter { display: block; font-size: 13px; font-weight: normal; margin-top: 4px; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px; width: fit-content; margin-left: auto; margin-right: auto;}
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <h2 style="font-size: 28px; margin-bottom: 5px;">🔒 Accesso Operatore</h2>
-        <p style="margin-bottom: 30px; font-size: 16px; color: #bdc3c7;">Elezioni Consiglio Provinciale di Teramo<br>8 Marzo 2026</p>
-        
+        <p style="margin-bottom: 30px; font-size: 16px; color: #bdc3c7;">Elezioni Provinciali Teramo - 8 Marzo 2026</p>
         <input type="password" id="pass-input" placeholder="Password...">
         <button onclick="sblocca()">SBLOCCA TERMINALE</button>
-
-        <div class="login-credits">
-            System Architecture & Development by <a href="https://github.com/mauz79" target="_blank">mauz79</a> &copy; 2026
-        </div>
     </div>
 
     <div class="main-content">
@@ -84,18 +75,19 @@
         
         <div id="step1" class="step">
             <div class="btn-colonna">
-                <button class="fascia-a" onclick="scegliFascia('Fascia A (Azzurra)')">Fascia A (Azzurra)</button>
-                <button class="fascia-b" onclick="scegliFascia('Fascia B (Arancione)')">Fascia B (Arancione)</button>
-                <button class="fascia-c" onclick="scegliFascia('Fascia C (Grigia)')">Fascia C (Grigia)</button>
-                <button class="fascia-d" onclick="scegliFascia('Fascia D (Rossa)')">Fascia D (Rossa)</button>
-                <button class="fascia-e" onclick="scegliFascia('Fascia E (Verde)')">Fascia E (Verde)</button>
+                <button class="fascia-a" onclick="scegliFascia('Fascia A (Azzurra)')">Fascia A (Azzurra) <span class="btn-counter" id="cnt-Fascia A (Azzurra)">Caricamento...</span></button>
+                <button class="fascia-b" onclick="scegliFascia('Fascia B (Arancione)')">Fascia B (Arancione) <span class="btn-counter" id="cnt-Fascia B (Arancione)">Caricamento...</span></button>
+                <button class="fascia-c" onclick="scegliFascia('Fascia C (Grigia)')">Fascia C (Grigia) <span class="btn-counter" id="cnt-Fascia C (Grigia)">Caricamento...</span></button>
+                <button class="fascia-d" onclick="scegliFascia('Fascia D (Rossa)')">Fascia D (Rossa) <span class="btn-counter" id="cnt-Fascia D (Rossa)">Caricamento...</span></button>
+                <button class="fascia-e" onclick="scegliFascia('Fascia E (Verde)')">Fascia E (Verde) <span class="btn-counter" id="cnt-Fascia E (Verde)">Caricamento...</span></button>
             </div>
-            <button class="yellow" style="margin-top: 40px;" onclick="annullaUltimo()">↩ Annulla Ultimo Voto Inserito</button>
+            <button class="config-btn" onclick="impostaVotanti()">⚙️ Imposta Votanti Effettivi (Opzionale)</button>
+            <button class="yellow" style="margin-top: 20px;" onclick="annullaUltimo()">↩ Annulla Ultimo Voto Inserito</button>
             <button class="danger" onclick="resetTotale()">⚠️ PERICOLO: AZZERA TUTTO IL DATABASE</button>
         </div>
 
         <div id="step2" class="step">
-            <div class="info-box">Fascia: <span id="lbl-fascia"></span></div>
+            <div class="info-box">Fascia: <span id="lbl-fascia" style="color:#e74c3c; float:right;"></span></div>
             <div class="btn-colonna">
                 <button class="lista-azione" onclick="scegliScelta('Azione con Calenda')">Azione con Calenda</button>
                 <button class="lista-territorio" onclick="scegliScelta('La Forza del Territorio')">La Forza del Territorio</button>
@@ -109,7 +101,7 @@
         </div>
 
         <div id="step3" class="step">
-            <div class="info-box">Lista: <span id="lbl-lista"></span></div>
+            <div class="info-box">Lista: <span id="lbl-lista" style="color:#e74c3c; float:right;"></span></div>
             <div class="btn-colonna">
                 <button class="yellow" onclick="inviaVoto(sceltaTemp, 'NESSUNA PREFERENZA')">SOLO VOTO DI LISTA</button>
                 <hr style="width:100%; border:1px solid #ddd; margin: 5px 0;">
@@ -120,14 +112,17 @@
     </div>
 
     <div class="footer-credits">
-        System Architecture & Development by <a href="https://github.com/mauz79" target="_blank">mauz79</a> &copy; 2026 | Elezioni Provinciali Teramo
+        System Architecture & Development by <a href="https://github.com/mauz79" target="_blank">mauz79</a> &copy; 2026
     </div>
-
     <div id="toast-container"></div>
 
     <script>
         const GOOGLE_API_URL = 'https://script.google.com/macros/s/AKfycbymTpPhhv_wQESb_whdvk4qTs5VLOF2jBc5ROEAXLb1quAR1LIKjHC_It_KFzveHzw/exec';
         let sysPassword = '';
+        
+        const AVENTI_DIRITTO = { "Fascia A (Azzurra)": 253, "Fascia B (Arancione)": 52, "Fascia C (Grigia)": 130, "Fascia D (Rossa)": 136, "Fascia E (Verde)": 33 };
+        let votantiEffettivi = { ...AVENTI_DIRITTO };
+        let spoglioAttuale = { "Fascia A (Azzurra)": 0, "Fascia B (Arancione)": 0, "Fascia C (Grigia)": 0, "Fascia D (Rossa)": 0, "Fascia E (Verde)": 0 };
 
         const databaseListe = {
             "Azione con Calenda": ["1 - Maiocco Sebastian", "2 - Graziosi Alessandro", "3 - Di Pietrangelo Chiara", "4 - Addazii Vincenzo", "5 - Recchiuti Gabriella", "6 - Del Principe Mario", "7 - Di Felice Simona"],
@@ -138,16 +133,16 @@
 
         let fasciaTemp = ''; let sceltaTemp = '';
 
-        document.getElementById("pass-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") { event.preventDefault(); sblocca(); }
-        });
+        document.getElementById("pass-input").addEventListener("keypress", function(e) { if (e.key === "Enter") sblocca(); });
 
         function sblocca() {
             sysPassword = document.getElementById('pass-input').value;
             if(sysPassword === 'teramo2026') {
                 document.getElementById('login-screen').style.display = 'none';
                 cambiaStep('step1');
-            } else { alert("Password Errata. Riprova."); document.getElementById('pass-input').value = '';}
+                sincronizzaContatori(); 
+                setInterval(sincronizzaContatori, 10000); 
+            } else { alert("Password Errata."); document.getElementById('pass-input').value = '';}
         }
 
         function mostraToast(msg, tipo = 'success') {
@@ -157,12 +152,57 @@
             container.appendChild(toast); setTimeout(() => toast.remove(), 2500);
         }
 
+        function sincronizzaContatori() {
+            fetch(GOOGLE_API_URL).then(r => r.json()).then(righe => {
+                let tempSpoglio = { "Fascia A (Azzurra)": 0, "Fascia B (Arancione)": 0, "Fascia C (Grigia)": 0, "Fascia D (Rossa)": 0, "Fascia E (Verde)": 0 };
+                let tempVotanti = { ...AVENTI_DIRITTO };
+                
+                righe.forEach(r => {
+                    let f = r[1], l = r[2], d = r[3];
+                    if(l === 'CONFIG_VOTANTI') { tempVotanti[f] = parseInt(d); return; }
+                    if(f && tempSpoglio[f] !== undefined) tempSpoglio[f]++;
+                });
+
+                votantiEffettivi = tempVotanti; spoglioAttuale = tempSpoglio;
+
+                Object.keys(spoglioAttuale).forEach(f => {
+                    let el = document.getElementById(`cnt-${f}`);
+                    if(el) el.innerText = `${spoglioAttuale[f]} / ${votantiEffettivi[f]}`;
+                });
+            }).catch(e => console.log("Errore sync"));
+        }
+
+        function impostaVotanti() {
+            let f = prompt("Quale fascia vuoi modificare?\nDigita A, B, C, D o E:");
+            if(!f) return;
+            let mapFasce = { 'A':'Fascia A (Azzurra)', 'B':'Fascia B (Arancione)', 'C':'Fascia C (Grigia)', 'D':'Fascia D (Rossa)', 'E':'Fascia E (Verde)' };
+            let fasciaScelta = mapFasce[f.toUpperCase()];
+            if(!fasciaScelta) { alert("Fascia non valida."); return; }
+            
+            let num = prompt(`Inserisci il numero dei VOTANTI EFFETTIVI per la ${fasciaScelta}:`);
+            if(!num || isNaN(num)) return;
+
+            mostraToast("Salvataggio Votanti...", "warning");
+            fetch(GOOGLE_API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ action: 'insert', fascia: fasciaScelta, scelta: 'CONFIG_VOTANTI', dettaglio: parseInt(num) }) 
+            }).then(() => { mostraToast("Configurazione Salvata!", "success"); sincronizzaContatori(); });
+        }
+
         function cambiaStep(stepId) {
             document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
             document.getElementById(stepId).classList.add('active');
         }
 
-        function scegliFascia(fascia) { fasciaTemp = fascia; document.getElementById('lbl-fascia').innerText = fascia.split(' ')[0] + ' ' + fascia.split(' ')[1]; cambiaStep('step2'); }
+        function scegliFascia(fascia) { 
+            if(spoglioAttuale[fascia] >= votantiEffettivi[fascia]) {
+                let forza = confirm(`⚠️ ATTENZIONE ⚠️\nHai già inserito ${spoglioAttuale[fascia]} voti su ${votantiEffettivi[fascia]} votanti per questa fascia!\nForzare l'inserimento di un'altra scheda?`);
+                if(!forza) return;
+            }
+            fasciaTemp = fascia; 
+            document.getElementById('lbl-fascia').innerText = fascia.split(' ')[0] + ' ' + fascia.split(' ')[1]; 
+            cambiaStep('step2'); 
+        }
+        
         function tornaFasce() { fasciaTemp = ''; cambiaStep('step1'); }
         function tornaListe() { sceltaTemp = ''; cambiaStep('step2'); }
 
@@ -172,8 +212,7 @@
             container.innerHTML = ''; 
             databaseListe[scelta].forEach(candidato => {
                 const btn = document.createElement('button');
-                btn.className = 'cand-btn'; 
-                btn.innerText = candidato; 
+                btn.className = 'cand-btn'; btn.innerText = candidato; 
                 btn.onclick = () => inviaVoto(scelta, candidato);
                 container.appendChild(btn);
             });
@@ -183,6 +222,11 @@
         function inviaVoto(sceltaFinale, dettaglio) {
             const payload = { action: 'insert', fascia: fasciaTemp, scelta: sceltaFinale, dettaglio: dettaglio };
             tornaFasce(); mostraToast('VOTO ACQUISITO', 'success');
+            
+            if(spoglioAttuale[fasciaTemp] !== undefined) spoglioAttuale[fasciaTemp]++;
+            let el = document.getElementById(`cnt-${fasciaTemp}`);
+            if(el) el.innerText = `${spoglioAttuale[fasciaTemp]} / ${votantiEffettivi[fasciaTemp]}`;
+
             fetch(GOOGLE_API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
             .catch(error => mostraToast('Errore rete!', 'error'));
         }
@@ -191,15 +235,15 @@
             if(!confirm("Vuoi annullare l'ULTIMO voto inserito nel sistema?")) return;
             mostraToast('Eliminazione...', 'warning');
             fetch(GOOGLE_API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'undo' }) })
-            .then(() => mostraToast('Voto rimosso.', 'error'));
+            .then(() => { mostraToast('Voto rimosso.', 'error'); sincronizzaContatori(); });
         }
 
         function resetTotale() {
-            if(prompt("ATTENZIONE! Questa operazione svuota definitivamente il foglio Google. Scrivi CONFERMO in maiuscolo per procedere:") === "CONFERMO") {
+            if(prompt("ATTENZIONE! Scrivi CONFERMO in maiuscolo per svuotare il database:") === "CONFERMO") {
                 mostraToast('Azzeramento...', 'warning');
                 fetch(GOOGLE_API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'clear_all', password: sysPassword }) })
-                .then(() => mostraToast('DATABASE AZZERATO.', 'error'));
-            } else { alert("Operazione annullata."); }
+                .then(() => { mostraToast('DATABASE AZZERATO.', 'error'); sincronizzaContatori(); });
+            }
         }
     </script>
 </body>
