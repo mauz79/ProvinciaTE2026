@@ -228,18 +228,34 @@
             .catch(error => mostraToast('Errore rete!', 'error'));
         }
 
-        function annullaUltimo() {
-            if(!confirm("Vuoi annullare l'ULTIMO voto di prova?")) return;
-            mostraToast('Eliminazione...', 'warning');
+function annullaUltimo() {
+            if(!confirm("Vuoi annullare l'ULTIMO voto inserito nel sistema?")) return;
+            mostraToast('Eliminazione in corso...', 'warning');
+            
             fetch(GOOGLE_API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'undo' }) })
-            .then(() => { mostraToast('Voto rimosso.', 'error'); sincronizzaContatori(); });
+            .then(() => { 
+                mostraToast('Voto rimosso.', 'error'); 
+                // Aspettiamo 1.5 secondi per dare tempo al database di eliminare la riga prima di ricaricare lo schermo
+                setTimeout(sincronizzaContatori, 1500); 
+            });
         }
 
         function resetTotale() {
-            if(prompt("Scrivi CONFERMO per svuotare il database di test:") === "CONFERMO") {
-                mostraToast('Azzeramento...', 'warning');
-                fetch(GOOGLE_API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'clear_all', password: sysPassword }) })
-                .then(() => { mostraToast('TEST AZZERATO.', 'error'); sincronizzaContatori(); });
+            let conferma = prompt("ATTENZIONE! Scrivi CONFERMO in maiuscolo per svuotare il database:");
+            
+            // Il .trim() evita errori se scrivi "CONFERMO " con uno spazio accidentale
+            if(conferma && conferma.trim().toUpperCase() === "CONFERMO") {
+                mostraToast('Azzeramento in corso...', 'warning');
+                
+                let payload = { action: 'clear_all', password: sysPassword };
+                fetch(GOOGLE_API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+                .then(() => { 
+                    mostraToast('DATABASE AZZERATO.', 'error'); 
+                    // Aspettiamo 2 secondi per far sì che Google spazzi via tutte le righe prima di aggiornare i contatori
+                    setTimeout(sincronizzaContatori, 2000); 
+                });
+            } else if (conferma) {
+                alert("Operazione annullata: non hai scritto CONFERMO in modo corretto.");
             }
         }
     </script>
