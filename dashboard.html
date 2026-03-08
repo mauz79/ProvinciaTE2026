@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
-        /* COLORI VIBRANTI (Come da tua richiesta) */
         :root { --azione: #8A2BE2; --territorio: #00BFFF; --comuni: #CD5C5C; --dangelo: #e0e0e0; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f6f9; color: #2c3e50; padding: 15px; margin: 0; display: flex; flex-direction: column; min-height: 100vh;}
         
@@ -21,7 +20,6 @@
         
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); margin-bottom: 20px; overflow: hidden;}
         
-        /* Box Andamento Scrutinio con Colori Fasce Vibranti */
         .stats-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 15px;}
         .stat-box { border: 1px solid #eee; padding: 12px 15px; border-radius: 8px; text-align: center; min-width: 110px; flex: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
         .stat-box h4 { margin: 0 0 5px 0; font-size: 13px; text-transform: uppercase;}
@@ -37,7 +35,6 @@
         .error-box { border: 2px solid #e74c3c !important; animation: shake 0.5s;}
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
 
-        /* Schede Eletti (Mini-Tabelle Incolonnate) */
         #cards-eletti { margin-top: 15px; }
         .list-card { background: #fff; border: 1px solid #ecf0f1; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .list-card h3 { margin: 0 0 10px 0; font-size: 18px; }
@@ -48,7 +45,6 @@
         .mini-table td.puri { color: #555; background: #fafbfc; border-left: 1px solid #f0f0f0; }
         .mini-table td.totale-puri { font-weight: bold; color: #2c3e50; background: #f0f2f5; border-left: 2px solid #ddd; }
 
-        /* Tabelle e Resto */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .main-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 800px; }
         .main-table th, .main-table td { border-bottom: 1px solid #eee; padding: 10px 6px; text-align: center; white-space: nowrap;}
@@ -100,16 +96,9 @@
                 <table id="tabella-liste" class="main-table">
                     <thead>
                         <tr>
-                            <th>Lista</th>
-                            <th>Ponderati</th>
-                            <th>%</th>
-                            <th style="font-size: 16px;">Seggi</th>
-                            <th class="col-grezzi">Fascia A</th>
-                            <th class="col-grezzi">Fascia B</th>
-                            <th class="col-grezzi">Fascia C</th>
-                            <th class="col-grezzi">Fascia D</th>
-                            <th class="col-grezzi">Fascia E</th>
-                            <th class="col-grezzi">Tot. Puri</th>
+                            <th>Lista</th><th>Ponderati</th><th>%</th><th style="font-size: 16px;">Seggi</th>
+                            <th class="col-grezzi">Fascia A</th><th class="col-grezzi">Fascia B</th><th class="col-grezzi">Fascia C</th>
+                            <th class="col-grezzi">Fascia D</th><th class="col-grezzi">Fascia E</th><th class="col-grezzi">Tot. Puri</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -124,16 +113,9 @@
             <table id="tabella-candidati" class="main-table">
                 <thead>
                     <tr>
-                        <th>Stato</th>
-                        <th style="text-align: left;">Nominativo</th>
-                        <th>Lista</th>
-                        <th style="font-size: 15px; color:#c0392b;">Tot. Ponderati</th>
-                        <th class="col-grezzi">Fascia A</th>
-                        <th class="col-grezzi">Fascia B</th>
-                        <th class="col-grezzi">Fascia C</th>
-                        <th class="col-grezzi">Fascia D</th>
-                        <th class="col-grezzi">Fascia E</th>
-                        <th class="col-grezzi">Tot. Puri</th>
+                        <th>Stato</th><th style="text-align: left;">Nominativo</th><th>Lista</th><th style="font-size: 15px; color:#c0392b;">Tot. Ponderati</th>
+                        <th class="col-grezzi">Fascia A</th><th class="col-grezzi">Fascia B</th><th class="col-grezzi">Fascia C</th>
+                        <th class="col-grezzi">Fascia D</th><th class="col-grezzi">Fascia E</th><th class="col-grezzi">Tot. Puri</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -177,7 +159,6 @@
     const AVENTI_DIRITTO = { "Fascia A (Azzurra)": 253, "Fascia B (Arancione)": 52, "Fascia C (Grigia)": 130, "Fascia D (Rossa)": 136, "Fascia E (Verde)": 33 };
     const PESI = { "Fascia A (Azzurra)": 48, "Fascia B (Arancione)": 120, "Fascia C (Grigia)": 204, "Fascia D (Rossa)": 257, "Fascia E (Verde)": 604 };
     const CLASSI_COLORE = { "Azione con Calenda": "color-azione", "La Forza del Territorio": "color-territorio", "La Casa dei Comuni": "color-comuni", "Con D'Angelo Presidente": "color-dangelo" };
-    // COLORI VIBRANTI RIPRISTINATI
     const HEX_COLORI = { "Azione con Calenda": "#8A2BE2", "La Forza del Territorio": "#00BFFF", "La Casa dei Comuni": "#CD5C5C", "Con D'Angelo Presidente": "#e0e0e0" };
 
     let chartPuri = null; let chartSeggi = null; let chartPeso = null;
@@ -185,12 +166,12 @@
     const pulisciNome = (n) => n.replace(/^\d+\s*-\s*/, '');
 
     function caricaDati() { 
-        document.querySelector('.refresh-btn').innerText = "⏳ Sincronizzazione in corso...";
+        document.querySelector('.refresh-btn').innerText = "⏳ Sincronizzazione...";
         fetch(GOOGLE_API_URL).then(r => r.json()).then(data => {
             elaboraDati(data);
             document.querySelector('.refresh-btn').innerText = "🔄 AGGIORNA DATI ORA";
         }).catch(e => {
-            alert("Errore di connessione a Google Sheets. Riprova.");
+            alert("Errore di rete.");
             document.querySelector('.refresh-btn').innerText = "🔄 AGGIORNA DATI ORA";
         });
     }
@@ -217,7 +198,6 @@
         righe.forEach(r => {
             let f = r[1], l = r[2], c = r[3], p = PESI[f] || 0;
             if(!f) return;
-            
             if(l === 'CONFIG_VOTANTI') { votantiEffettivi[f] = parseInt(c); return; }
 
             spoglio.Totale++;
@@ -270,7 +250,6 @@
         `;
         document.getElementById('scrutinio-container').innerHTML = htmlScrutinio;
 
-        // --- SCHEDE ELETTI CON MINI-TABELLA INCOLONNATA E TOTALE PURI ---
         let htmlCardsEletti = '';
         let listeOrdinate = Object.keys(votiListe).sort((a,b) => votiListe[b].pond - votiListe[a].pond);
         
@@ -280,14 +259,10 @@
                 let htmlRows = nomiLista.map(n => {
                     let c = candidati[n]; let grz = c.grezzi;
                     return `<tr>
-                        <td style="text-align:left; font-weight:bold;">${n}</td>
-                        <td class="quota">${c.pond}</td>
-                        <td class="puri">${grz["Fascia A (Azzurra)"]}</td>
-                        <td class="puri">${grz["Fascia B (Arancione)"]}</td>
-                        <td class="puri">${grz["Fascia C (Grigia)"]}</td>
-                        <td class="puri">${grz["Fascia D (Rossa)"]}</td>
-                        <td class="puri">${grz["Fascia E (Verde)"]}</td>
-                        <td class="totale-puri">${c.totGrezzi}</td>
+                        <td style="text-align:left; font-weight:bold;">${n}</td><td class="quota">${c.pond}</td>
+                        <td class="puri">${grz["Fascia A (Azzurra)"]}</td><td class="puri">${grz["Fascia B (Arancione)"]}</td>
+                        <td class="puri">${grz["Fascia C (Grigia)"]}</td><td class="puri">${grz["Fascia D (Rossa)"]}</td>
+                        <td class="puri">${grz["Fascia E (Verde)"]}</td><td class="totale-puri">${c.totGrezzi}</td>
                     </tr>`;
                 }).join('');
                 
@@ -306,7 +281,6 @@
         });
         document.getElementById('cards-eletti').innerHTML = htmlCardsEletti;
 
-        // --- TABELLA LISTE CON TOTALE PURI ---
         let tbL = document.querySelector('#tabella-liste tbody'); tbL.innerHTML = '';
         let etichetteSeggi = []; let datiSeggi = []; let coloriSeggi = [];
         
@@ -320,13 +294,11 @@
                 <td><strong>${pnd}</strong></td><td>${perc}%</td><td style="font-size:18px; font-weight:bold;">${seggi[l]}</td>
                 <td class="col-grezzi">${grz["Fascia A (Azzurra)"]}</td><td class="col-grezzi">${grz["Fascia B (Arancione)"]}</td>
                 <td class="col-grezzi">${grz["Fascia C (Grigia)"]}</td><td class="col-grezzi">${grz["Fascia D (Rossa)"]}</td>
-                <td class="col-grezzi">${grz["Fascia E (Verde)"]}</td>
-                <td class="col-grezzi" style="font-weight:bold; color:#2c3e50;">${totGrezziLista}</td>
+                <td class="col-grezzi">${grz["Fascia E (Verde)"]}</td><td class="col-grezzi" style="font-weight:bold; color:#2c3e50;">${totGrezziLista}</td>
             </tr>`;
             if(seggi[l] > 0) { etichetteSeggi.push(l); datiSeggi.push(seggi[l]); coloriSeggi.push(HEX_COLORI[l]); }
         });
 
-        // --- TABELLA GENERALE TUTTI ---
         let tbC = document.querySelector('#tabella-candidati tbody'); tbC.innerHTML = '';
         let tuttiCandidati = Object.keys(candidati).sort((a, b) => candidati[b].pond - candidati[a].pond);
         
@@ -360,7 +332,6 @@
         const estrai = (fascia) => eletti.map(n => candidati[n].grezzi[fascia]);
         const etichetteNomiBrevi = eletti.map(e => e.split(' ')[0]);
 
-        // COLORI FORTI PER I VOTI PURI (Azzurro scuro, arancione, ecc.)
         chartPuri = new Chart(document.getElementById('graficoVotiPuri').getContext('2d'), {
             type: 'bar',
             data: {
@@ -418,18 +389,13 @@
                 scales: { x: { stacked: true, grid: {display:false} }, y: { stacked: true } },
                 plugins: { 
                     datalabels: { 
-                        // TESTO NERO CON BORDO BIANCO (Come da Screenshot fornito!)
-                        color: '#000', 
-                        textStrokeColor: '#fff', 
-                        textStrokeWidth: 3,
+                        color: '#000', textStrokeColor: '#fff', textStrokeWidth: 3,
                         font: {weight: 'bold', size: 12}, textAlign: 'center',
-                        
-                        // NESSUN FILTRO: Mostra tutti i nomi, anche quelli piccoli che sbordano
                         formatter: function(value, context) {
                             if(value === 0) return '';
                             let nome = context.dataset.nomiAssociati[context.dataIndex];
                             if(context.datasetIndex > 0) return nome.split(' ')[0] + '\n' + value;
-                            return value; // Solo numero per il blocco grigio "Resto"
+                            return value; 
                         }
                     },
                     legend: { display: false },

@@ -112,7 +112,6 @@
     let P_MAX = 0;
     let schedeMancantiTot = 0;
 
-    // Popola tendina candidati all'avvio
     window.onload = () => {
         const select = document.getElementById('cand-selector');
         for(let l in databaseListe) {
@@ -130,13 +129,13 @@
 
     function caricaDati() {
         const btn = document.getElementById('btn-aggiorna');
-        btn.innerText = "⏳ Sincronizzazione in corso...";
+        btn.innerText = "⏳ Sincronizzazione...";
         
         fetch(GOOGLE_API_URL).then(r => r.json()).then(data => {
             elaboraDati(data);
             btn.innerText = "🔄 Aggiorna Dati Ora";
         }).catch(e => {
-            btn.innerText = "❌ Errore Rete (Riprova)";
+            btn.innerText = "❌ Errore Rete";
             setTimeout(() => btn.innerText = "🔄 Aggiorna Dati Ora", 2000);
         });
     }
@@ -147,7 +146,6 @@
         
         dbListe = { "Azione con Calenda": 0, "La Forza del Territorio": 0, "La Casa dei Comuni": 0, "Con D'Angelo Presidente": 0 };
         
-        // Inizializza tutti a 0
         dbCandidati = {};
         for(let l in databaseListe) {
             databaseListe[l].forEach(c => { dbCandidati[c] = { lista: l, pond: 0 }; });
@@ -168,7 +166,6 @@
             }
         });
 
-        // CALCOLO P_MAX
         P_MAX = 0; schedeMancantiTot = 0;
         ['Fascia A (Azzurra)', 'Fascia B (Arancione)', 'Fascia C (Grigia)', 'Fascia D (Rossa)', 'Fascia E (Verde)'].forEach(f => {
             let mancanti = Math.max(0, votantiEffettivi[f] - spoglio[f]);
@@ -192,14 +189,13 @@
         return seggi;
     }
 
-    // Funzione base per trovare i seggi minimi garantiti di una lista
     function getSeggiGarantiti(listaTarget) {
         let minSeggi = 10; 
         let avversari = Object.keys(dbListe).filter(l => l !== listaTarget);
         
         avversari.forEach(avv => {
             let votiSimulati = { ...dbListe };
-            votiSimulati[avv] += P_MAX; // Worst case: do tutto all'avversario
+            votiSimulati[avv] += P_MAX; 
             let seggiSimulati = simulaSeggi(votiSimulati);
             if (seggiSimulati[listaTarget] < minSeggi) minSeggi = seggiSimulati[listaTarget];
         });
@@ -295,7 +291,7 @@
         }
     }
 
-    setInterval(caricaDati, 60000); // 60 Secondi auto
+    setInterval(caricaDati, 60000); 
 </script>
 
 </body>
