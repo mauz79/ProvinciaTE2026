@@ -10,6 +10,7 @@
         :root { --azione: #8A2BE2; --territorio: #00BFFF; --comuni: #CD5C5C; --dangelo: #e0e0e0; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f6f9; color: #2c3e50; padding: 15px; padding-top: 50px; margin: 0; display: flex; flex-direction: column; min-height: 100vh;}
         
+        /* BANNER DI TEST */
         .test-banner { position: fixed; top: 0; left: 0; width: 100%; background: #c0392b; color: white; padding: 10px 0; font-weight: bold; font-size: 18px; z-index: 999999; animation: flash 2s infinite; letter-spacing: 2px; text-align: center;}
         @keyframes flash { 0%, 100% { background-color: #c0392b; } 50% { background-color: #e74c3c; } }
 
@@ -68,6 +69,10 @@
         .chart-container { position: relative; height: 400px; width: 100%; min-width: 600px;}
         .chart-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .doughnut-container { position: relative; height: 250px; width: 100%; display: flex; justify-content: center; margin-bottom: 15px;}
+        
+        /* CREDITI AGGIUNTI */
+        .footer-credits { margin-top: 30px; padding: 20px 0; font-size: 14px; color: #7f8c8d; border-top: 1px solid #ddd; text-align: center; width: 100%;}
+        .footer-credits a { color: #3498db; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -142,6 +147,10 @@
     </div>
 </div>
 
+<div class="footer-credits">
+    System Architecture & Data Visualization by <a href="https://github.com/mauz79" target="_blank">mauz79</a> &copy; 2026 (Test Environment)
+</div>
+
 <script>
     Chart.register(ChartDataLabels);
     
@@ -169,7 +178,7 @@
             elaboraDati(data);
             document.querySelector('.refresh-btn').innerText = "🔄 AGGIORNA DATI ORA";
         }).catch(e => {
-            alert("Errore di connessione. Riprova.");
+            alert("Errore di connessione.");
             document.querySelector('.refresh-btn').innerText = "🔄 AGGIORNA DATI ORA";
         });
     }
