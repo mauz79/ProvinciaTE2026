@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RADAR 2 (Excel) - Analisi Matematica</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #1e272e; color: #ecf0f1; padding: 20px; margin: 0; }
+        .container { max-width: 900px; margin: auto; }
+        
+        h1 { text-align: center; color: #3498db; font-weight: 300; border-bottom: 1px solid #34495e; padding-bottom: 15px; margin-bottom: 20px;}
+        
+        .refresh-btn { display: block; width: 100%; max-width: 400px; margin: 0 auto 30px auto; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; text-transform: uppercase;}
+        .refresh-btn:active { transform: scale(0.98); }
+
+        .pmax-box { background: #c0392b; color: white; padding: 20px; border-radius: 8px; text-align: center; font-size: 18px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
+        .pmax-box strong { font-size: 38px; display: block; margin-top: 5px; }
+
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        @media (max-width: 768px) { .control-grid { grid-template-columns: 1fr; } }
+
+        .control-panel { background: #2c3e50; padding: 20px; border-radius: 8px; border: 1px solid #34495e;}
+        .control-panel label { font-size: 13px; color: #bdc3c7; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+        .control-panel select { width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; background: #1e272e; color: white; border: 1px solid #7f8c8d; border-radius: 6px;}
+        
+        .result-card { background: #34495e; padding: 25px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .res-lista { border-left: 8px solid #9b59b6; }
+        .res-cand { border-left: 8px solid #3498db; }
+        
+        .result-card h2 { margin-top: 0; font-size: 22px; color: white; border-bottom: 1px solid #4a6278; padding-bottom: 10px;}
+        .metric { margin-bottom: 12px; font-size: 16px; display: flex; justify-content: space-between; align-items: center;}
+        .metric span { font-weight: bold; font-size: 20px;}
+        
+        .status-badge { display: block; text-align: center; padding: 12px; font-size: 18px; font-weight: bold; border-radius: 6px; margin-top: 20px; text-transform: uppercase;}
+        .status-safe { background: #27ae60; color: white; border: 2px solid #2ecc71;}
+        .status-wait { background: #f39c12; color: #fff; border: 2px solid #f1c40f;}
+        .status-out { background: #7f8c8d; color: white; border: 2px solid #95a5a6;}
+
+        .refresh-info { text-align: center; color: #7f8c8d; font-size: 12px; margin-top: 20px;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📡 RADAR STRATEGICO DELRIO</h1>
+
+    <button class="refresh-btn" id="btn-aggiorna" onclick="caricaDati()">🔄 Aggiorna Dati Ora</button>
+
+    <div class="pmax-box">
+        Voti Ponderati ancora in palio (P<sub>max</sub>)
+        <strong id="lbl-pmax">-</strong>
+        <span style="font-size: 14px; opacity: 0.9; display: block; margin-top: 5px;" id="lbl-schede-mancanti">In attesa di calcolo...</span>
+    </div>
+
+    <div class="control-grid">
+        <div class="control-panel">
+            <label>1. Analizza una Lista</label>
+            <select id="list-selector" onchange="analizzaLista()">
+                <option value="">-- Seleziona Lista --</option>
+                <option value="Azione con Calenda">Azione con Calenda</option>
+                <option value="La Forza del Territorio">La Forza del Territorio</option>
+                <option value="La Casa dei Comuni">La Casa dei Comuni</option>
+                <option value="Con D'Angelo Presidente">Con D'Angelo Presidente</option>
+            </select>
+        </div>
+
+        <div class="control-panel">
+            <label>2. Analizza un Candidato</label>
+            <select id="cand-selector" onchange="analizzaCandidato()">
+                <option value="">-- Seleziona Candidato --</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="res-box-lista" class="result-card res-lista">
+        <h2 id="rl-nome">Nome Lista</h2>
+        <div class="metric">Voti Ponderati Attuali <span id="rl-voti">0</span></div>
+        <div class="metric">Seggi Virtuali (Fotografia attuale) <span id="rl-seggi-attuali" style="color: #3498db;">0</span></div>
+        <div class="metric">Seggi GARANTITI (Pessimo Scenario) <span id="rl-seggi-garantiti" style="color: #27ae60;">0</span></div>
+        <div id="rl-status" class="status-badge">STATUS</div>
+    </div>
+
+    <div id="res-box-cand" class="result-card res-cand">
+        <h2 id="rc-nome">Nome Candidato</h2>
+        <div class="metric">Lista di appartenenza <span id="rc-lista" style="font-size:16px; font-weight:normal;"></span></div>
+        <div class="metric">Voti Ponderati Personali <span id="rc-voti" style="color: #3498db;">0</span></div>
+        <div class="metric">Posizione nella sua Lista <span id="rc-pos">0</span></div>
+        <div class="metric">Distacco dal 1° dei non eletti <span id="rc-margin">0</span></div>
+        <div id="rc-status" class="status-badge">STATUS</div>
+        <p style="font-size: 13px; color: #bdc3c7; line-height: 1.4; margin-top: 15px; font-style: italic;" id="rc-spiegazione"></p>
+    </div>
+    
+    <div class="refresh-info">Auto-aggiornamento di sicurezza ogni 60 secondi.</div>
+</div>
+
+<script>
+    // NUOVO URL APPS SCRIPT (ADATTATORE EXCEL)
+    const GOOGLE_API_URL = 'https://script.google.com/macros/s/AKfycbx8lshZLRvsfNYx5tMQ4sdAPT1IRRPoon5TFl8dvffQWCdXrVk0wu3k3X1KPqVJnpYhQQ/exec';
+    
+    const databaseListe = {
+        "Azione con Calenda": ["Maiocco Sebastian", "Graziosi Alessandro", "Di Pietrangelo Chiara", "Addazii Vincenzo", "Recchiuti Gabriella", "Del Principe Mario", "Di Felice Simona"],
+        "La Forza del Territorio": ["Adriani Pietro", "Cianella Maria Cristina", "Giansante Luciano", "Altitonante Fabio", "Ciprietti Nadia", "Gatti Danilo", "Intini Federica", "Provvisiero Caterina", "Trosini Ettore", "Valentini Bruno"],
+        "La Casa dei Comuni": ["De Ascaniis Fausta", "Di Vincenzo Elodia", "Illuminati Marta", "Ioannone Dino", "Tribuiani Paolo", "Varani Massimo"],
+        "Con D'Angelo Presidente": ["D'Angelo Simona", "Di Romualdo Giovanna", "Di Sabatino Humberto Elio Roberto", "Giosia Berardo", "Lattanzi Luca", "Marziani Giuseppe", "Piccioni Teodora"]
+    };
+
+    // DATI AFFLUENZA DEFINITIVI
+    const AVENTI_DIRITTO = { "Fascia A (Azzurra)": 243, "Fascia B (Arancione)": 48, "Fascia C (Grigia)": 122, "Fascia D (Rossa)": 131, "Fascia E (Verde)": 33 };
+    const PESI = { "Fascia A (Azzurra)": 48, "Fascia B (Arancione)": 120, "Fascia C (Grigia)": 204, "Fascia D (Rossa)": 257, "Fascia E (Verde)": 604 };
+    const pulisciNome = (n) => n.replace(/^\d+\s*-\s*/, '');
+
+    let dbCandidati = {};
+    let dbListe = { "Azione con Calenda": 0, "La Forza del Territorio": 0, "La Casa dei Comuni": 0, "Con D'Angelo Presidente": 0 };
+    let P_MAX = 0;
+    let schedeMancantiTot = 0;
+
+    window.onload = () => {
+        const select = document.getElementById('cand-selector');
+        for(let l in databaseListe) {
+            let optgroup = document.createElement('optgroup');
+            optgroup.label = l;
+            databaseListe[l].forEach(c => {
+                let opt = document.createElement('option');
+                opt.value = c; opt.innerText = c;
+                optgroup.appendChild(opt);
+            });
+            select.appendChild(optgroup);
+        }
+        caricaDati();
+    };
+
+    function caricaDati() {
+        const btn = document.getElementById('btn-aggiorna');
+        btn.innerText = "⏳ Sincronizzazione...";
+        
+        fetch(GOOGLE_API_URL).then(r => r.json()).then(data => {
+            elaboraDati(data);
+            btn.innerText = "🔄 Aggiorna Dati Ora";
+        }).catch(e => {
+            btn.innerText = "❌ Errore Rete";
+            setTimeout(() => btn.innerText = "🔄 Aggiorna Dati Ora", 2000);
+        });
+    }
+
+    function elaboraDati(righe) {
+        let spoglio = { "Fascia A (Azzurra)":0, "Fascia B (Arancione)":0, "Fascia C (Grigia)":0, "Fascia D (Rossa)":0, "Fascia E (Verde)":0 };
+        let votantiEffettivi = { ...AVENTI_DIRITTO };
+        
+        dbListe = { "Azione con Calenda": 0, "La Forza del Territorio": 0, "La Casa dei Comuni": 0, "Con D'Angelo Presidente": 0 };
+        
+        dbCandidati = {};
+        for(let l in databaseListe) {
+            databaseListe[l].forEach(c => { dbCandidati[c] = { lista: l, pond: 0 }; });
+        }
+
+        righe.forEach(r => {
+            let f = r[1], l = r[2], c = r[3], p = PESI[f] || 0;
+            if(!f) return;
+            if(l === 'CONFIG_VOTANTI') { votantiEffettivi[f] = parseInt(c); return; }
+            if(spoglio[f] !== undefined && l !== 'Scheda Bianca' && l !== 'Scheda Nulla') spoglio[f]++; 
+            
+            if (dbListe[l] !== undefined) {
+                dbListe[l] += p;
+                if (c && c !== "NESSUNA PREFERENZA") {
+                    let np = pulisciNome(c);
+                    if(dbCandidati[np]) dbCandidati[np].pond += p;
+                }
+            }
+        });
+
+        P_MAX = 0; schedeMancantiTot = 0;
+        ['Fascia A (Azzurra)', 'Fascia B (Arancione)', 'Fascia C (Grigia)', 'Fascia D (Rossa)', 'Fascia E (Verde)'].forEach(f => {
+            let mancanti = Math.max(0, votantiEffettivi[f] - spoglio[f]);
+            schedeMancantiTot += mancanti;
+            P_MAX += (mancanti * PESI[f]);
+        });
+
+        document.getElementById('lbl-pmax').innerText = P_MAX.toLocaleString('it-IT');
+        document.getElementById('lbl-schede-mancanti').innerText = `(${schedeMancantiTot} schede valide non ancora scrutinate)`;
+
+        analizzaLista();
+        analizzaCandidato();
+    }
+
+    function simulaSeggi(votiMock) {
+        let seggi = { "Azione con Calenda": 0, "La Forza del Territorio": 0, "La Casa dei Comuni": 0, "Con D'Angelo Presidente": 0 };
+        let quozienti = [];
+        for (let l in votiMock) { for (let i = 1; i <= 10; i++) quozienti.push({ l: l, q: votiMock[l] / i }); }
+        quozienti.sort((a, b) => b.q - a.q);
+        for (let i = 0; i < 10; i++) if(quozienti[i]) seggi[quozienti[i].l]++;
+        return seggi;
+    }
+
+    function getSeggiGarantiti(listaTarget) {
+        let minSeggi = 10; 
+        let avversari = Object.keys(dbListe).filter(l => l !== listaTarget);
+        
+        avversari.forEach(avv => {
+            let votiSimulati = { ...dbListe };
+            votiSimulati[avv] += P_MAX; 
+            let seggiSimulati = simulaSeggi(votiSimulati);
+            if (seggiSimulati[listaTarget] < minSeggi) minSeggi = seggiSimulati[listaTarget];
+        });
+        return minSeggi;
+    }
+
+    function analizzaLista() {
+        let lista = document.getElementById('list-selector').value;
+        let box = document.getElementById('res-box-lista');
+        if(!lista) { box.style.display = 'none'; return; }
+        
+        box.style.display = 'block';
+        let seggiAttuali = simulaSeggi(dbListe)[lista];
+        let seggiGarantiti = getSeggiGarantiti(lista);
+
+        document.getElementById('rl-nome').innerText = lista;
+        document.getElementById('rl-voti').innerText = dbListe[lista];
+        document.getElementById('rl-seggi-attuali').innerText = seggiAttuali;
+        document.getElementById('rl-seggi-garantiti').innerText = seggiGarantiti;
+
+        let status = document.getElementById('rl-status');
+        if (seggiGarantiti > 0) {
+            status.className = 'status-badge status-safe';
+            status.innerText = `${seggiGarantiti} SEGGI BLINDATI`;
+        } else if (seggiAttuali > 0) {
+            status.className = 'status-badge status-wait';
+            status.innerText = `NESSUN SEGGIO SICURO (ATTUALMENTE ${seggiAttuali})`;
+        } else {
+            status.className = 'status-badge status-out';
+            status.innerText = `NESSUN SEGGIO`;
+        }
+    }
+
+    function analizzaCandidato() {
+        let nome = document.getElementById('cand-selector').value;
+        let box = document.getElementById('res-box-cand');
+        if(!nome || !dbCandidati[nome]) { box.style.display = 'none'; return; }
+        
+        box.style.display = 'block';
+        let cand = dbCandidati[nome];
+        let lista = cand.lista;
+
+        let seggiGarantitiLista = getSeggiGarantiti(lista);
+
+        let colleghi = Object.keys(dbCandidati)
+            .filter(n => dbCandidati[n].lista === lista)
+            .sort((a,b) => dbCandidati[b].pond - dbCandidati[a].pond);
+        
+        let myPos = colleghi.indexOf(nome) + 1;
+        
+        let nomeRivale = colleghi[seggiGarantitiLista] || null; 
+        let votiRivale = nomeRivale ? dbCandidati[nomeRivale].pond : 0;
+        let marginInterno = cand.pond - votiRivale;
+
+        document.getElementById('rc-nome').innerText = nome;
+        document.getElementById('rc-lista').innerText = lista;
+        document.getElementById('rc-voti').innerText = cand.pond;
+        document.getElementById('rc-pos').innerText = `${myPos}° su ${colleghi.length}`;
+        
+        if (nomeRivale) {
+            document.getElementById('rc-margin').innerHTML = `${marginInterno} pt <span style="font-size:12px; color:#bdc3c7; display:block;">(vs ${nomeRivale})</span>`;
+        } else {
+            document.getElementById('rc-margin').innerText = `Nessun rivale`;
+        }
+
+        let elStatus = document.getElementById('rc-status');
+        let elSpiegazione = document.getElementById('rc-spiegazione');
+
+        if (P_MAX === 0) {
+            elStatus.className = 'status-badge status-safe';
+            elStatus.innerText = myPos <= simulaSeggi(dbListe)[lista] ? 'ELETTO (SPOGLIO CONCLUSO)' : 'NON ELETTO';
+            elSpiegazione.innerText = "Lo spoglio è matematicamente terminato.";
+        } 
+        else if (seggiGarantitiLista === 0) {
+            elStatus.className = 'status-badge status-out';
+            elStatus.innerText = 'LISTA A RISCHIO';
+            elSpiegazione.innerText = `Nessuna garanzia. La lista "${lista}" non ha ancora blindato seggi matematicamente.`;
+        } 
+        else if (myPos > seggiGarantitiLista) {
+            elStatus.className = 'status-badge status-wait';
+            elStatus.innerText = 'IN BILICO (FUORI DAI SEGGI SICURI)';
+            elSpiegazione.innerText = `La lista ha blindato ${seggiGarantitiLista} seggi, ma tu sei in posizione ${myPos}. Devi superare i colleghi o la lista deve vincere altri seggi.`;
+        }
+        else if (marginInterno > P_MAX) {
+            elStatus.className = 'status-badge status-safe';
+            elStatus.innerText = '🟢 MATEMATICAMENTE ELETTO';
+            elSpiegazione.innerText = `VITTORIA MATEMATICA. La lista ha blindato ${seggiGarantitiLista} seggi. Il tuo margine sul 1° dei non eletti interni è incolmabile anche se prendesse tutti i voti rimasti.`;
+        } 
+        else {
+            elStatus.className = 'status-badge status-wait';
+            elStatus.innerText = '🟠 IN ATTESA DI CONFERMA';
+            elSpiegazione.innerText = `Sei nei ${seggiGarantitiLista} seggi blindati, MA matematicamente il candidato dietro di te (${nomeRivale}) potrebbe ancora sorpassarti con i ${P_MAX} punti residui.`;
+        }
+    }
+
+    setInterval(caricaDati, 60000); 
+</script>
+
+</body>
+</html>
